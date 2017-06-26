@@ -12,7 +12,8 @@ public class ScrPlayer : MonoBehaviour {
 	private float MVAtual;
     public bool botaoDireitoPrecionado;
     public bool botaoEsquerdoPrecionado;
-
+    public float velocidadeYAtual;
+    public float limiteDaVelocidadeEmY;
     // Use this for initialization
     void Start() {
         botaoDireitoPrecionado = false;
@@ -21,6 +22,7 @@ public class ScrPlayer : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
 		Animacao = GetComponent <Animator>();
         colisao = false;
+        limiteDaVelocidadeEmY = -3.5f;
     }
 
     // Update is called once per frame
@@ -48,10 +50,14 @@ public class ScrPlayer : MonoBehaviour {
             MVAtual = 0;
         }
 		if (Input.GetKeyDown(KeyCode.W) && colisao == true){
-			rb.AddForce(transform.up * jumpForce);
+			rb.AddForce(Vector2.up * jumpForce);
             colisao = false;
 		}
-        rb.velocity = new Vector3(MVAtual * Time.deltaTime , 0 , 0);
+        velocidadeYAtual = rb.velocity.y;
+        if(velocidadeYAtual < limiteDaVelocidadeEmY){
+            velocidadeYAtual = limiteDaVelocidadeEmY;
+        }
+        rb.velocity = new Vector3(MVAtual * Time.deltaTime , velocidadeYAtual, 0);
     }
 
     void OnCollisionEnter2D(Collision2D collision){
@@ -60,6 +66,12 @@ public class ScrPlayer : MonoBehaviour {
         {
             colisao = true;
         }
+       
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        colisao = false;
     }
 }
 
