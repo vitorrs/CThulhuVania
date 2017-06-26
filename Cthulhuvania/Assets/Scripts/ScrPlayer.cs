@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScrPlayer : MonoBehaviour {
 
+    bool colisao;
     public Rigidbody2D rb;
 	public Animator Animacao;
 	public float jumpForce;
@@ -19,7 +20,7 @@ public class ScrPlayer : MonoBehaviour {
         MVAtual= 0;
         rb = GetComponent<Rigidbody2D>();
 		Animacao = GetComponent <Animator>();
-
+        colisao = false;
     }
 
     // Update is called once per frame
@@ -46,10 +47,19 @@ public class ScrPlayer : MonoBehaviour {
             botaoDireitoPrecionado = false;
             MVAtual = 0;
         }
-		if (Input.GetKey(KeyCode.W)){
+		if (Input.GetKeyDown(KeyCode.W) && colisao == true){
 			rb.AddForce(transform.up * jumpForce);
+            colisao = false;
 		}
-        rb.velocity = new Vector3(MVAtual * Time.deltaTime , 0, 0);
+        rb.velocity = new Vector3(MVAtual * Time.deltaTime , 0 , 0);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision){
+        Vector2 normal = collision.contacts[0].normal;
+        if (normal == Vector2.up)
+        {
+            colisao = true;
+        }
     }
 }
 
